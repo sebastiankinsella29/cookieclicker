@@ -7,7 +7,7 @@
   'use strict';
 
   // --- Configuration ---
-  const TARGET_SEQUENCE = ['c', 'o', 'o', 'k', 'i', 'e']; // Type 'cookie' to toggle GUI
+  const TARGET_SEQUENCE = ['c', 'o', 'o', 'k', 'i', 'e', 'l', 'u', 'm', 'p']; // Type 'cookie' to toggle GUI
 
   // --- State Variables ---
   let keyBuffer = [];
