@@ -1,205 +1,117 @@
-/**
- * Cookie Clicker Cookie Editor with Key-Sequence Activation
- * Sequence: Type "cookie" to show/hide the menu.
- */
-
 (function () {
   'use strict';
 
-  // --- Configuration ---
-  const TARGET_SEQUENCE = ['c', 'o', 'o', 'k', 'i', 'e', 'g', 'i', 'v' 'e']; // Type 'cookie' to toggle GUI
-
-  // --- State Variables ---
+  const TARGET_SEQUENCE = ['c', 'o', 'o', 'k', 'i', 'e', 'g'];
   let keyBuffer = [];
   let guiElement = null;
 
-  // --- Key Sequence Listener ---
-  window.addEventListener('keydown', (event) => {
-    // Prevent trigger while typing in text inputs or textareas
-    if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-      return;
-    }
+  // Listen for key presses
+  document.addEventListener('keydown', (event) => {
+    // Ignore input inside text boxes
+    if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
-    keyBuffer.push(event.key.toLowerCase());
+    // Use event.key.toLowerCase() to handle Caps Lock / Shift
+    const key = event.key.toLowerCase();
+    
+    // Only capture single alphabet letters
+    if (key.length === 1 && key >= 'a' && key <= 'z') {
+      keyBuffer.push(key);
+      if (keyBuffer.length > TARGET_SEQUENCE.length) {
+        keyBuffer.shift();
+      }
 
-    // Maintain buffer window size
-    if (keyBuffer.length > TARGET_SEQUENCE.length) {
-      keyBuffer.shift();
-    }
-
-    // Check for sequence match
-    if (keyBuffer.join('') === TARGET_SEQUENCE.join('')) {
-      toggleGUI();
-      keyBuffer = []; // Reset buffer
+      if (keyBuffer.join('') === TARGET_SEQUENCE.join('')) {
+        toggleGUI();
+        keyBuffer = [];
+      }
     }
   });
 
-  // --- GUI Toggle & Injection ---
-  function toggleGUI() {
-    if (guiElement) {
-      const isHidden = guiElement.style.display === 'none';
-      guiElement.style.display = isHidden ? 'block' : 'none';
-      if (!isHidden) updateDisplay();
-      return;
-    }
-
-    createGUI();
+  // Emergency Trigger Button (Bottom Left)
+  function injectHelperButton() {
+    if (document.getElementById('ce-helper-btn')) return;
+    const btn = document.createElement('button');
+    btn.id = 'ce-helper-btn';
+    btn.innerText = '🍪 Menu';
+    Object.assign(btn.style, {
+      position: 'fixed',
+      bottom: '10px',
+      left: '10px',
+      zIndex: '999999',
+      padding: '8px 12px',
+      backgroundColor: '#f97316',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '6px',
+      fontWeight: 'bold',
+      cursor: 'pointer',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+      fontFamily: 'sans-serif'
+    });
+    btn.onclick = toggleGUI;
+    document.body.appendChild(btn);
   }
 
-  // --- GUI Construction ---
+  function toggleGUI() {
+    if (!guiElement) {
+      createGUI();
+    } else {
+      guiElement.style.display = guiElement.style.display === 'none' ? 'block' : 'none';
+    }
+    updateDisplay();
+  }
+
   function createGUI() {
     guiElement = document.createElement('div');
     guiElement.id = 'cookie-editor-gui';
 
-    // UI Styling
     Object.assign(guiElement.style, {
       position: 'fixed',
       top: '20px',
       right: '20px',
-      width: '250px',
-      backgroundColor: 'rgba(15, 23, 42, 0.95)',
+      width: '240px',
+      backgroundColor: '#0f172a',
       color: '#f8fafc',
       padding: '16px',
       borderRadius: '10px',
-      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
-      fontFamily: 'Segoe UI, Roboto, sans-serif',
+      boxShadow: '0 10px 25px rgba(0, 0, 0, 0.7)',
+      fontFamily: 'Segoe UI, sans-serif',
       fontSize: '14px',
-      zIndex: '999999',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      backdropFilter: 'blur(8px)',
-      userSelect: 'none'
+      zIndex: '9999999',
+      border: '1px solid #334155'
     });
 
-    // Inner UI Structure
     guiElement.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <span style="font-weight: 600; font-size: 15px; color: #f97316;">Cookie Spawner</span>
-        <button id="ce-close-btn" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 16px;">✕</button>
+        <span style="font-weight: bold; color: #f97316;">Cookie Spawner</span>
+        <button id="ce-close-btn" style="background: none; border: none; color: #94a3b8; cursor: pointer;">✕</button>
       </div>
-
-      <div style="margin-bottom: 12px; background: #1e293b; padding: 10px; border-radius: 6px; text-align: center;">
-        <span style="font-size: 12px; color: #94a3b8; display: block;">Current Bank</span>
-        <span id="ce-current-count" style="font-size: 18px; font-weight: bold; color: #fdba74;">0</span>
+      <div style="margin-bottom: 12px; background: #1e293b; padding: 8px; border-radius: 6px; text-align: center;">
+        <span style="font-size: 11px; color: #94a3b8; display: block;">Current Cookies</span>
+        <span id="ce-count" style="font-size: 16px; font-weight: bold; color: #fdba74;">0</span>
       </div>
-
-      <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-        <button id="ce-add-1m" style="
-          flex: 1;
-          padding: 6px 0;
-          border: none;
-          border-radius: 6px;
-          background-color: #f97316;
-          color: #ffffff;
-          font-weight: 600;
-          cursor: pointer;
-        ">+1 Million</button>
-        <button id="ce-add-1b" style="
-          flex: 1;
-          padding: 6px 0;
-          border: none;
-          border-radius: 6px;
-          background-color: #ea580c;
-          color: #ffffff;
-          font-weight: 600;
-          cursor: pointer;
-        ">+1 Billion</button>
-      </div>
-
-      <div style="margin-bottom: 12px;">
-        <label style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px;">Set Exact Amount</label>
-        <input id="ce-custom-input" type="number" placeholder="Enter amount..." min="0" style="
-          width: 100%;
-          padding: 6px 8px;
-          border-radius: 6px;
-          border: 1px solid #334155;
-          background: #1e293b;
-          color: #f8fafc;
-          box-sizing: border-box;
-          font-size: 13px;
-          margin-bottom: 8px;
-        " />
-        <button id="ce-set-btn" style="
-          width: 100%;
-          padding: 6px 0;
-          border: none;
-          border-radius: 6px;
-          background-color: #38bdf8;
-          color: #ffffff;
-          font-weight: 600;
-          cursor: pointer;
-        ">Set Cookies</button>
-      </div>
+      <button id="ce-add-1m" style="width:100%; margin-bottom: 6px; padding: 6px; background:#f97316; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">+1 Million</button>
+      <button id="ce-add-1b" style="width:100%; margin-bottom: 6px; padding: 6px; background:#ea580c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">+1 Billion</button>
     `;
 
     document.body.appendChild(guiElement);
 
-    // Event Bindings
-    const closeBtn = guiElement.querySelector('#ce-close-btn');
-    const add1mBtn = guiElement.querySelector('#ce-add-1m');
-    const add1bBtn = guiElement.querySelector('#ce-add-1b');
-    const setBtn = guiElement.querySelector('#ce-set-btn');
-    const customInput = guiElement.querySelector('#ce-custom-input');
-
-    closeBtn.addEventListener('click', () => {
-      guiElement.style.display = 'none';
-    });
-
-    add1mBtn.addEventListener('click', () => {
-      modifyCookies(1000000);
-    });
-
-    add1bBtn.addEventListener('click', () => {
-      modifyCookies(1000000000);
-    });
-
-    setBtn.addEventListener('click', () => {
-      const val = parseFloat(customInput.value);
-      if (!isNaN(val) && val >= 0) {
-        setCookies(val);
-        customInput.value = '';
-      }
-    });
-
-    updateDisplay();
-  }
-
-  // --- Cookie Manipulation Functions ---
-  function getGameCookies() {
-    if (typeof Game !== 'undefined' && typeof Game.cookies !== 'undefined') {
-      return Game.cookies;
-    }
-    return 0;
-  }
-
-  function modifyCookies(amount) {
-    if (typeof Game !== 'undefined' && typeof Game.cookies !== 'undefined') {
-      Game.Earn(amount); // Use native Game.Earn so stats update properly
-      updateDisplay();
-    } else {
-      alert('Cookie Clicker game object (Game.cookies) not detected.');
-    }
-  }
-
-  function setCookies(amount) {
-    if (typeof Game !== 'undefined' && typeof Game.cookies !== 'undefined') {
-      Game.cookies = amount;
-      if (typeof Game.cookiesEarned !== 'undefined' && amount > Game.cookiesEarned) {
-        Game.cookiesEarned = amount;
-      }
-      updateDisplay();
-    } else {
-      alert('Cookie Clicker game object (Game.cookies) not detected.');
-    }
+    guiElement.querySelector('#ce-close-btn').onclick = () => guiElement.style.display = 'none';
+    guiElement.querySelector('#ce-add-1m').onclick = () => { if (window.Game) Game.Earn(1000000); updateDisplay(); };
+    guiElement.querySelector('#ce-add-1b').onclick = () => { if (window.Game) Game.Earn(1000000000); updateDisplay(); };
   }
 
   function updateDisplay() {
-    if (guiElement) {
-      const countLabel = guiElement.querySelector('#ce-current-count');
-      if (countLabel) {
-        countLabel.innerText = Math.floor(getGameCookies()).toLocaleString();
-      }
+    if (guiElement && window.Game) {
+      const countLabel = guiElement.querySelector('#ce-count');
+      if (countLabel) countLabel.innerText = Math.floor(Game.cookies).toLocaleString();
     }
   }
 
-  console.log('Cookie Spawner script loaded. Type "cookie" anywhere on the page to open the panel.');
+  // Ensure DOM is ready before adding helper button
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectHelperButton);
+  } else {
+    injectHelperButton();
+  }
 })();
