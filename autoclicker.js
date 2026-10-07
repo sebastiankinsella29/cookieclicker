@@ -139,7 +139,8 @@
 
   // --- Autoclicker Engine ---
   function startClicker() {
-    const targetElement = document.getElementById('bigCookie');
+    // Replace 'bigCookie' with 'cookie'
+    const targetElement = document.getElementById('cookie');
 
     if (!targetElement) {
       alert('Autoclicker error: Could not find #bigCookie on this page.');
