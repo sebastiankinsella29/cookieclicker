@@ -888,8 +888,8 @@ M.launch=function()
 			'fertilizer':{
 				name:loc("Fertilizer"),
 				icon:1,
-				tick:3,
-				effMult:0.75,
+				tick:0.25,
+				effMult:5,
 				weedMult:1.2,
 				req:50,
 				effsStr:'<div class="gray">&bull; '+loc("tick every %1",'<b>'+Game.sayTime(3*60*Game.fps)+'</b>')+'</div><div class="red">&bull; '+loc("passive plant effects")+' <b>-25%</b></div><div class="red">&bull; '+loc("weed growth")+' <b>+20%</b></div>',
