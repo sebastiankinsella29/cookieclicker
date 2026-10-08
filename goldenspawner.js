@@ -1,6 +1,6 @@
 /**
  * Cookie Clicker Custom Golden Cookie Spawner
- * Sequence: Type "cookie" or click the bottom-left "🍪 Menu" button.
+ * Sequence: Type "cookie" to show/hide the menu.
  */
 
 (function () {
@@ -28,32 +28,6 @@
       }
     }
   });
-
-  // --- Emergency Helper Button (Bottom-Left) ---
-  function injectHelperButton() {
-    if (document.getElementById('gc-helper-btn')) return;
-
-    const btn = document.createElement('button');
-    btn.id = 'gc-helper-btn';
-    btn.innerText = '🍪 Menu';
-    Object.assign(btn.style, {
-      position: 'fixed',
-      bottom: '10px',
-      left: '10px',
-      zIndex: '999999',
-      padding: '8px 12px',
-      backgroundColor: '#eab308',
-      color: '#000',
-      border: 'none',
-      borderRadius: '6px',
-      fontWeight: 'bold',
-      cursor: 'pointer',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
-      fontFamily: 'Segoe UI, sans-serif'
-    });
-    btn.onclick = toggleGUI;
-    document.body.appendChild(btn);
-  }
 
   // --- GUI Toggle ---
   function toggleGUI() {
@@ -168,12 +142,5 @@
     };
   }
 
-  // Inject helper button when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', injectHelperButton);
-  } else {
-    injectHelperButton();
-  }
-
-  console.log('Golden Cookie Spawner script loaded. Type "cookie" or click the bottom-left button.');
+  console.log('Golden Cookie Spawner script loaded. Type "cookie" anywhere on the page to open the menu.');
 })();
