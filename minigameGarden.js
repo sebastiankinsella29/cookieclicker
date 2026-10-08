@@ -888,7 +888,7 @@ M.launch=function()
 			'fertilizer':{
 				name:loc("Fertilizer"),
 				icon:1,
-				tick:0.25,
+				tick:0.08,
 				effMult:5,
 				weedMult:1.2,
 				req:50,
